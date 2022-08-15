@@ -1,7 +1,9 @@
 import os
 import sys
 from dotenv import load_dotenv
-import barcode
+from barcode import Code128
+from barcode.writer import ImageWriter
+from printing import print_barcode
 
 load_dotenv()
 LAST_BARCODE = int(os.getenv('LAST_BARCODE'))
@@ -34,9 +36,12 @@ def write_new_last_num(num):
 
 
 def create_barcode(barcode_str):
-    code = barcode.get('code128', barcode_str)
-    options = {'module_width': 0.5}
-    code.save('code', options)
+    writer = ImageWriter()
+    options = {'module_width': 0.3,
+               'module_height': 6.0,
+               'text_distance': 0.6}
+    with open('code.png', 'wb') as f:
+        Code128(barcode_str, writer=writer).write(f, options=options)
 
 
 def main():
@@ -46,8 +51,9 @@ def main():
         for _ in range(num_to_print):
             last_num += 1
             barcode_str = make_barcode_str(last_num)
-            print(barcode_str)
             create_barcode(barcode_str)
+            print(barcode_str)
+            print_barcode('code.png')
             write_new_last_num(last_num)
     except Exception as err:
         print(err)
