@@ -1,4 +1,4 @@
 python-barcode
-python-dotenv
 pywin32
 pillow
+kivy
