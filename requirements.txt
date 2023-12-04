@@ -1,4 +1,3 @@
 python-barcode
 pywin32
 pillow
-kivy
