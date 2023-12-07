@@ -1,5 +1,4 @@
 from win32 import win32print
-from win32 import win32api
 import win32ui
 from PIL import Image, ImageWin
 
@@ -14,14 +13,15 @@ PHYSICALHEIGHT = 111
 
 def print_barcode(filename):
     """
-    Calculates the printing dimensions and sends a printing job of a given file to a system's default printer.
+    Calculates the printing dimensions and sends a printing job of a given
+    file to a system's default printer.
     """
     printer_name = win32print.GetDefaultPrinter()
     # Create uninitialised device context
     hDC = win32ui.CreateDC()
     # Creates a device context for a given printer
     hDC.CreatePrinterDC(printer_name)
-    # Create a tuple of printable area by getting device parameters for 
+    # Create a tuple of printable area by getting device parameters for
     # height and width in pixels
     printable_area = hDC.GetDeviceCaps(HORZRES), hDC.GetDeviceCaps(VERTRES)
     printer_size = (hDC.GetDeviceCaps(PHYSICALWIDTH),

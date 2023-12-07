@@ -27,6 +27,7 @@ def get_config():
     config.read('settings.ini')
     return config
 
+
 def check_args():
     """
     Checks command line argument and if everything is corrects,
@@ -54,7 +55,8 @@ def make_barcode_str(prefix, num):
 
 def write_new_last_num(num):
     """
-    Opens settings.ini file and replaces 'last_barcode' parameter with a new value.
+    Opens settings.ini file and replaces 'last_barcode'
+    parameter with a new value.
     """
     config = configparser.ConfigParser()
     config.read('settings.ini')
@@ -72,6 +74,7 @@ def create_barcode(barcode_str):
                'text_distance': 4.0}
     with open('code.png', 'wb') as f:
         Code128(barcode_str, writer=writer).write(f, options=options)
+
 
 def send_to_print(num):
     num_to_print = num
