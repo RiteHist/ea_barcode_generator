@@ -6,6 +6,7 @@ from barcode import Code128
 from barcode.writer import ImageWriter
 
 from printing import print_barcode
+from log_conf import logger
 
 
 def get_config():
@@ -53,6 +54,17 @@ def make_barcode_str(prefix, num):
     return final_barcode
 
 
+def write_new_prefix(text):
+    """
+    Opens settings.ini file and replaces 'prefix' parameter with a new value.
+    """
+    config = configparser.ConfigParser()
+    config.read('settings.ini')
+    config['BARCODE']['PREFIX'] = text
+    with open('settings.ini', 'w') as configfile:
+        config.write(configfile)
+
+
 def write_new_last_num(num):
     """
     Opens settings.ini file and replaces 'last_barcode'
@@ -81,13 +93,15 @@ def send_to_print(num):
     config = get_config()
     last_num = int(config['BARCODE']['LAST_BARCODE'])
     prefix = config['BARCODE']['PREFIX']
-    try:
-        for _ in range(num_to_print):
-            last_num += 1
+    for _ in range(num_to_print):
+        last_num += 1
+        try:
             barcode_str = make_barcode_str(prefix, last_num)
             create_barcode(barcode_str)
-            print(barcode_str)
+            logger.info(f'Sent to print: {barcode_str}')
             print_barcode('code.png')
             write_new_last_num(last_num)
-    except Exception as err:
-        print(err)
+        except Exception:
+            logger.exception('An exception occurred:')
+        finally:
+            continue
