@@ -1,4 +1,3 @@
-import sys
 import configparser
 from os.path import exists
 
@@ -18,7 +17,7 @@ def get_config():
     config = configparser.ConfigParser()
     if not exists('settings.ini'):
         config['BARCODE'] = {
-            'LAST_BARCODE': 1,
+            'NEXT_BARCODE': 1,
             'PREFIX': 'TEST'
         }
 
@@ -27,22 +26,6 @@ def get_config():
 
     config.read('settings.ini')
     return config
-
-
-def check_args():
-    """
-    Checks command line argument and if everything is corrects,
-    returns the number of barcodes to print. Otherwise, prints command
-    usage to stdout.
-    """
-    if len(sys.argv) < 2:
-        print('Usage: ea_barcode.py [number to print]')
-        sys.exit()
-    num_to_print = sys.argv[1]
-    if not num_to_print.isdigit():
-        print('Usage: ea_barcode.py [number to print]')
-        sys.exit()
-    return int(num_to_print)
 
 
 def make_barcode_str(prefix, num):
@@ -72,7 +55,7 @@ def write_new_last_num(num):
     """
     config = configparser.ConfigParser()
     config.read('settings.ini')
-    config['BARCODE']['LAST_BARCODE'] = str(num)
+    config['BARCODE']['NEXT_BARCODE'] = str(num)
     with open('settings.ini', 'w') as configfile:
         config.write(configfile)
 
@@ -91,7 +74,7 @@ def create_barcode(barcode_str):
 def send_to_print(num):
     num_to_print = num
     config = get_config()
-    last_num = int(config['BARCODE']['LAST_BARCODE'])
+    last_num = int(config['BARCODE']['NEXT_BARCODE'])
     prefix = config['BARCODE']['PREFIX']
     for _ in range(num_to_print):
         try:

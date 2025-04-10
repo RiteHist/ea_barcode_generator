@@ -16,8 +16,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         config = get_config()
         prefix = config['BARCODE']['PREFIX']
         self.code_text.setText(prefix)
-        last_barcode = int(config['BARCODE']['LAST_BARCODE'])
-        self.code_num_box.setValue(last_barcode)
+        next_barcode = int(config['BARCODE']['NEXT_BARCODE'])
+        self.code_num_box.setValue(next_barcode)
         (self.num_to_print_box.valueChanged
          .connect(self.box_num_to_print_edit_event))
         self.print_btn.clicked.connect(self.btn_print_event)
@@ -27,7 +27,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def btn_print_event(self):
         send_to_print(self.num_to_print)
         config = get_config()
-        new_barcode = int(config['BARCODE']['LAST_BARCODE'])
+        new_barcode = int(config['BARCODE']['NEXT_BARCODE'])
         self.code_num_box.setValue(new_barcode)
 
     def box_num_to_print_edit_event(self, new_num):
