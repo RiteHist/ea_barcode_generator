@@ -1,9 +1,12 @@
 import sys
 import configparser
 from os.path import exists
+
 from barcode import Code128
 from barcode.writer import ImageWriter
+
 from printing import print_barcode
+from log_conf import logger
 
 
 def get_config():
@@ -26,11 +29,6 @@ def get_config():
     return config
 
 
-CONFIG = get_config()
-LAST_BARCODE = CONFIG['BARCODE']['LAST_BARCODE']
-BARCODE_PREFIX = CONFIG['BARCODE']['PREFIX']
-
-
 def check_args():
     """
     Checks command line argument and if everything is corrects,
@@ -47,18 +45,30 @@ def check_args():
     return int(num_to_print)
 
 
-def make_barcode_str(num):
+def make_barcode_str(prefix, num):
     """
     Creates a barcode string from prefix and the number preceded by zeroes.
     Returns final string.
     """
-    final_barcode = BARCODE_PREFIX + str('%06d' % num)
+    final_barcode = prefix + str('%06d' % num)
     return final_barcode
+
+
+def write_new_prefix(text):
+    """
+    Opens settings.ini file and replaces 'prefix' parameter with a new value.
+    """
+    config = configparser.ConfigParser()
+    config.read('settings.ini')
+    config['BARCODE']['PREFIX'] = text
+    with open('settings.ini', 'w') as configfile:
+        config.write(configfile)
 
 
 def write_new_last_num(num):
     """
-    Opens settings.ini file and replaces 'last_barcode' parameter with a new value.
+    Opens settings.ini file and replaces 'last_barcode'
+    parameter with a new value.
     """
     config = configparser.ConfigParser()
     config.read('settings.ini')
@@ -78,20 +88,20 @@ def create_barcode(barcode_str):
         Code128(barcode_str, writer=writer).write(f, options=options)
 
 
-def main():
-    num_to_print = check_args()
-    last_num = int(LAST_BARCODE)
-    try:
-        for _ in range(num_to_print):
-            last_num += 1
-            barcode_str = make_barcode_str(last_num)
+def send_to_print(num):
+    num_to_print = num
+    config = get_config()
+    last_num = int(config['BARCODE']['LAST_BARCODE'])
+    prefix = config['BARCODE']['PREFIX']
+    for _ in range(num_to_print):
+        last_num += 1
+        try:
+            barcode_str = make_barcode_str(prefix, last_num)
             create_barcode(barcode_str)
-            print(barcode_str)
+            logger.info(f'Sent to print: {barcode_str}')
             print_barcode('code.png')
             write_new_last_num(last_num)
-    except Exception as err:
-        print(err)
-
-
-if __name__ == '__main__':
-    main()
+        except Exception:
+            logger.exception('An exception occurred:')
+        finally:
+            continue

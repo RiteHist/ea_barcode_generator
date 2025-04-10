@@ -1,3 +1,5 @@
 python-barcode
 pywin32
 pillow
+pyqt5
+pyqt5-tools
