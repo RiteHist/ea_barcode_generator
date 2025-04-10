@@ -1,3 +1,4 @@
+from os import makedirs
 import logging
 import logging.config
 
@@ -25,6 +26,6 @@ LOGGING_CONFIG = {
         },
     },
 }
-
+makedirs('.logs', exist_ok=True)
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('super_logger')

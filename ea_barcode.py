@@ -18,7 +18,7 @@ def get_config():
     config = configparser.ConfigParser()
     if not exists('settings.ini'):
         config['BARCODE'] = {
-            'LAST_BARCODE': 0,
+            'LAST_BARCODE': 1,
             'PREFIX': 'TEST'
         }
 
@@ -94,12 +94,12 @@ def send_to_print(num):
     last_num = int(config['BARCODE']['LAST_BARCODE'])
     prefix = config['BARCODE']['PREFIX']
     for _ in range(num_to_print):
-        last_num += 1
         try:
             barcode_str = make_barcode_str(prefix, last_num)
             create_barcode(barcode_str)
             logger.info(f'Sent to print: {barcode_str}')
             print_barcode('code.png')
+            last_num += 1
             write_new_last_num(last_num)
         except Exception:
             logger.exception('An exception occurred:')
